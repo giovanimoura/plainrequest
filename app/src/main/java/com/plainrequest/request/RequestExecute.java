@@ -36,6 +36,10 @@ public class RequestExecute implements OnPlainRequest {
      */
     public <T> void execute(Settings settings) {
         this.settings = settings;
+
+        if (!settings.clearUrlDefault)
+            settings.url = settings.urlDefault + settings.url; // Concatena a url
+
         print("Request: " + settings.url);
 
         // Executa o onPreExecute
@@ -50,6 +54,10 @@ public class RequestExecute implements OnPlainRequest {
 
         // Criação da request
         RequestCustom request = new RequestCustom(settings, superClass, this, plainRequestQueue.getRequestIntercept());
+
+        if (!settings.tagName.isEmpty())
+            request.setTag(settings.tagName); // Define tag para a request
+
         // Execução da request
         plainRequestQueue.getRequestQueue().add(request);
     }
@@ -66,7 +74,7 @@ public class RequestExecute implements OnPlainRequest {
         print("StatusCode: " + statusCode);
         print("Response:" + response.toString());
 
-        settings.requestCallback.onSuccess(new ResponseConvert().convert(response, settings.nameFindJson, superClass), statusCode);
+        settings.requestCallback.onSuccess(new ResponseConvert().convert(response, settings, superClass), statusCode);
     }
 
     /**

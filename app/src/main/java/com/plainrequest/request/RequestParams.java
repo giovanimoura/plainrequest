@@ -1,7 +1,6 @@
 package com.plainrequest.request;
 
 import com.plainrequest.util.JsonUtil;
-import com.google.gson.Gson;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -23,11 +22,9 @@ import java.util.Map;
 class RequestParams {
 
     private Object paramsObj;
-    private Gson gson;
 
     public RequestParams(Object paramsObj) {
         this.paramsObj = paramsObj;
-        this.gson = new Gson();
     }
 
     /**

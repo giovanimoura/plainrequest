@@ -31,13 +31,13 @@ public class Settings {
     // Settings BuilderQueue
     public String urlDefault;
     public boolean buildRelease;
-    public String protocolGooglePlayService;
+    public String protocolGooglePlayServices;
     public String protocolSSLSocket;
 
     public Settings() {
         this.timeOutSeconds = 10; // 10 seconds of timeout
         this.enableSSL = true;
-        this.protocolGooglePlayService = "TLSv1.2";
+        this.protocolGooglePlayServices = "TLSv1.2";
         this.protocolSSLSocket = "TLS";
     }
 

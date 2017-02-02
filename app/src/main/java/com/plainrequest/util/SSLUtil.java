@@ -30,7 +30,7 @@ public class SSLUtil {
 
     public static void updateSecurityProvider(Context context, Settings settings) {
         try {
-            SSLContext.getInstance(settings.protocolGooglePlayService);
+            SSLContext.getInstance(settings.protocolGooglePlayServices);
             ProviderInstaller.installIfNeeded(context);
 
         } catch (GooglePlayServicesRepairableException e) {

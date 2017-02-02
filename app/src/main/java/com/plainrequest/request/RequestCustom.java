@@ -11,9 +11,10 @@ import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.HttpHeaderParser;
-import com.plainrequest.interfaces.OnPlainRequest;
 import com.plainrequest.interfaces.OnInterceptRequest;
+import com.plainrequest.interfaces.OnPlainRequest;
 import com.plainrequest.model.Settings;
+import com.plainrequest.util.JsonUtil;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -65,10 +66,10 @@ class RequestCustom<T> extends Request<T> {
 
         String msgError = null;
         if (error instanceof NetworkError) {
-            msgError = "Falha na conexão com o servidor.";
+            msgError = "Failed to connect to server";
 
         } else if (error instanceof TimeoutError) {
-            msgError = "Tempo limite para conexão excedido.";
+            msgError = "Timeout for connection exceeded";
         } else {
             if (error.networkResponse != null && error.networkResponse.data != null && !error.networkResponse.data.equals("")) {
                 try {
@@ -124,6 +125,9 @@ class RequestCustom<T> extends Request<T> {
     @Override
     public byte[] getBody() throws AuthFailureError {
         try {
+            // Define o formato para campos Date do Gson
+            JsonUtil.registerDateFormat(settings.dateFormat, settings.dateFormatSerializer, settings.dateFormatDeserializer);
+
             return requestParams.getParamsBody() == null ? null : requestParams.getParamsBody().getBytes(PROTOCOL_CHARSET);
         } catch (Exception e) {
             VolleyLog.wtf("Unsupported Encoding while trying to get the bytes of %s using %s", new Object[]{requestParams.getParamsObj(), PROTOCOL_CHARSET});

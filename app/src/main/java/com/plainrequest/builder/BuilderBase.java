@@ -33,10 +33,10 @@ class BuilderBase<T extends BuilderBase> {
      * Define o timeOut da request em segundos
      * Default value 10 seconds
      *
-     * @param timeOutSeconds
+     * @param timeOut
      */
-    public T timeOutSeconds(int timeOutSeconds) {
-        settings.timeOutSeconds = timeOutSeconds;
+    public T timeOutSeconds(int timeOut) {
+        settings.timeOutSeconds = timeOut;
         return (T) this;
     }
 

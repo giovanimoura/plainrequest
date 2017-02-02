@@ -29,20 +29,22 @@ public class BuilderQueue extends BuilderBase<BuilderQueue> {
     }
 
     /**
+     * Define o protocolo SSL do GooglePlayServices
      *
-     * @param protocolGooglePlayService
+     * @param protocol
      */
-    public BuilderQueue protocolGooglePlayService(String protocolGooglePlayService) {
-        this.settings.protocolGooglePlayService = protocolGooglePlayService;
+    public BuilderQueue protocolGooglePlayServices(String protocol) {
+        this.settings.protocolGooglePlayServices = protocol;
         return this;
     }
 
     /**
+     * Define o protocolo SSL do SSLSocket
      *
-     * @param protocolSSLSocket
+     * @param protocol
      */
-    public BuilderQueue protocolSSLSocket(String protocolSSLSocket) {
-        this.settings.protocolSSLSocket = protocolSSLSocket;
+    public BuilderQueue protocolSSLSocket(String protocol) {
+        this.settings.protocolSSLSocket = protocol;
         return this;
     }
 

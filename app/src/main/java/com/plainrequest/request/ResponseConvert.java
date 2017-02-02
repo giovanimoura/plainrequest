@@ -1,5 +1,6 @@
 package com.plainrequest.request;
 
+import com.plainrequest.model.Settings;
 import com.plainrequest.util.JsonUtil;
 
 import org.json.JSONArray;
@@ -18,30 +19,19 @@ class ResponseConvert {
 
     private Type superClass;
 
-    public <T> T convert(T response, String nameFindJson, Type superClass) {
+    public <T> T convert(T response, Settings settings, Type superClass) {
         this.superClass = superClass;
 
+        // Define o formato para campos Date do Gson
+        JsonUtil.registerDateFormat(settings.dateFormat, settings.dateFormatSerializer, settings.dateFormatDeserializer);
+
         if (isList()) {
-//            Class sClass = null;
-//            Type typeClass = ((ParameterizedType) superClass).getActualTypeArguments()[0]; // Tipo da Classe no list
-
-//            if (typeClass instanceof ParameterizedType) {
-//                ParameterizedType parameterizedType = ((ParameterizedType) typeClass);
-//                if (parameterizedType != null) {
-//                    sClass = (Class) parameterizedType.getRawType(); // Map
-//                }
-//            } else {
-//                sClass = (Class) typeClass;
-//            }
-
-            response = (T) JsonUtil.toList(nameFindJson, response.toString(), superClass);
-
+            response = (T) JsonUtil.toList(settings.nameFindJson, response.toString(), superClass);
         } else if (isMap()) {
             response = (T) JsonUtil.toMap(response.toString(), superClass);
-
         } else if (isObject()) {
-            if (nameFindJson != null)
-                response = JsonUtil.toObject(nameFindJson, response.toString(), (Class) superClass);
+            if (settings.nameFindJson != null)
+                response = JsonUtil.toObject(settings.nameFindJson, response.toString(), (Class) superClass);
             else
                 response = JsonUtil.toObject(response.toString(), (Class) superClass);
         }

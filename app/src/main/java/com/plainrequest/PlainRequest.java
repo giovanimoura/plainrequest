@@ -17,6 +17,15 @@ public class PlainRequest {
         return new Builder();
     }
 
+    /**
+     * Cancela a request conforme tagName
+     *
+     * @param tagName
+     */
+    public static void cancel(String tagName) {
+        PlainRequestQueue.getInstance().getRequestQueue().cancelAll(tagName);
+    }
+
     static class Builder {
 
         /**
