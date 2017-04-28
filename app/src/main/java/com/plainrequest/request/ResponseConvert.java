@@ -22,9 +22,6 @@ class ResponseConvert {
     public <T> T convert(T response, Settings settings, Type superClass) {
         this.superClass = superClass;
 
-        // Define o formato para campos Date do Gson
-        JsonUtil.registerDateFormat(settings.dateFormat, settings.dateFormatSerializer, settings.dateFormatDeserializer);
-
         if (isList()) {
             response = (T) JsonUtil.toList(settings.nameFindJson, response.toString(), superClass);
         } else if (isMap()) {

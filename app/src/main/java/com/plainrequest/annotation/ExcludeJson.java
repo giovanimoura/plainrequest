@@ -6,15 +6,10 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- *
- *
  * @author Giovani Moura
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
 public @interface ExcludeJson {
-
-    boolean serialize() default false;
-    boolean deserialize() default false;
 
 }

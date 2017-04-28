@@ -2,6 +2,7 @@ package com.plainrequest.builder;
 
 import com.plainrequest.PlainRequestQueue;
 import com.plainrequest.RequestCallback;
+import com.plainrequest.interfaces.OnRequestCallback;
 import com.plainrequest.request.RequestExecute;
 
 import java.util.HashMap;
@@ -12,7 +13,7 @@ import java.util.Map;
  */
 public class BuilderRequest extends BuilderBase<BuilderRequest> {
 
-    protected Map<String, String> mapParams;
+    protected Map<String, Object> mapParams;
     private RequestExecute requestExecute;
 
     public BuilderRequest(String url, int method) {
@@ -42,7 +43,23 @@ public class BuilderRequest extends BuilderBase<BuilderRequest> {
      * @param <T>
      */
     public <T> BuilderRequest requestCallback(RequestCallback<T> requestCallback) {
-        settings.requestCallback = requestCallback;
+        settings.onRequestCallback = requestCallback;
+        return this;
+    }
+
+    /**
+     * Callback da request, com retorno generico no response do onSuccess
+     *
+     * onPreExecute - Executado antes da request
+     * onSuccess    - Executado após sucesso no retorno da request
+     * onError      - Executado em casos de exception da request
+     *
+     * @param onRequestCallback
+     * @param <T>
+     * @return
+     */
+    public <T> BuilderRequest requestCallback(OnRequestCallback<T> onRequestCallback) {
+        settings.onRequestCallback = onRequestCallback;
         return this;
     }
 

@@ -14,8 +14,7 @@ class BuilderBase<T extends BuilderBase> {
     }
 
     BuilderBase(Settings settings) {
-        this.settings = new Settings();
-        this.settings.copy(settings);
+        this.settings = settings.clone(); // clona o objeto settings
     }
 
     /**
@@ -37,37 +36,6 @@ class BuilderBase<T extends BuilderBase> {
      */
     public T timeOutSeconds(int timeOut) {
         settings.timeOutSeconds = timeOut;
-        return (T) this;
-    }
-
-    /**
-     * Define o formato dos campos do tipo Date no Serializer e Deserializer do Gson
-     * Default value long
-     *
-     * @param format
-     */
-    public T dateFormat(String format) {
-        settings.dateFormat = format;
-        return (T) this;
-    }
-
-    /**
-     * Define o formato dos campos do tipo Date no Serializer
-     *
-     * @param format
-     */
-    public T dateFormatSerializer(String format) {
-        settings.dateFormatSerializer = format;
-        return (T) this;
-    }
-
-    /**
-     * Define o formato dos campos do tipo Date no Deserializer
-     *
-     * @param format
-     */
-    public T dateFormatDeserializer(String format) {
-        settings.dateFormatDeserializer = format;
         return (T) this;
     }
 

@@ -26,7 +26,7 @@ public class PlainRequest {
         PlainRequestQueue.getInstance().getRequestQueue().cancelAll(tagName);
     }
 
-    static class Builder {
+    public static class Builder {
 
         /**
          * Define uma request do tipo GET
@@ -110,7 +110,7 @@ public class PlainRequest {
              * @param key
              * @param value
              */
-            public BuilderPost param(String key, String value) {
+            public BuilderPost param(String key, Object value) {
                 mapParams.put(key, value);
                 settings.params = mapParams;
                 return this;

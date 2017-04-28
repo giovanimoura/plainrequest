@@ -22,8 +22,6 @@ import org.json.JSONObject;
 import org.json.JSONTokener;
 
 import java.lang.reflect.Type;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -36,9 +34,6 @@ import java.util.Map;
 public class JsonUtil {
 
     private static final String TAG = "PLAINREQUEST";
-    private static String dateFormat;
-    private static String dateFormatSerializer;
-    private static String dateFormatDeserializer;
 
     /**
      * Converte um objeto para uma string json
@@ -125,6 +120,17 @@ public class JsonUtil {
     /**
      * Converte string json para uma lista
      *
+     * @param json
+     * @param typeToken
+     * @return
+     */
+    public static List toList(String json, TypeToken typeToken) {
+        return toList("", json, typeToken.getType());
+    }
+
+    /**
+     * Converte string json para uma lista
+     *
      * @param nameFindJson Campo para ser localizado e desserializado
      * @param json         String json
      * @param superClass   Tipo da classe do objeto de retorno
@@ -149,18 +155,6 @@ public class JsonUtil {
     }
 
     /**
-     * Converte string json para uma lista
-     *
-     *
-     * @param nameFindJson Campo para ser localizado e desserializado
-     * @param json         String json
-     * @return List
-     */
-    public static List toList(String nameFindJson, String json, TypeToken typeToken) {
-        return toList(nameFindJson, json, typeToken.getType());
-    }
-
-    /**
      * Converte string json para um map
      *
      * @param json       String json
@@ -168,13 +162,7 @@ public class JsonUtil {
      * @return
      */
     public static Map toMap(String json, Type superClass) {
-        return new Gson().fromJson(json, superClass);
-    }
-
-    public static void registerDateFormat(String formatDate, String formatDateSerializer, String formatDateDeserializer) {
-        dateFormat = formatDate;
-        dateFormatSerializer = formatDateSerializer;
-        dateFormatDeserializer = formatDateDeserializer;
+        return createGson().fromJson(json, superClass);
     }
 
     private static Gson createGson() {
@@ -184,60 +172,24 @@ public class JsonUtil {
         builder.registerTypeAdapter(Date.class, new JsonSerializer<Date>() {
             @Override
             public JsonElement serialize(Date date, Type typeOfSrc, JsonSerializationContext context) {
-                String dateJson = String.valueOf(date.getTime());
-
-                if (!dateFormatSerializer.isEmpty()) {
-                    dateJson = new SimpleDateFormat("").format(dateFormatSerializer);
-                } else if (!dateFormat.isEmpty()) {
-                    dateJson = new SimpleDateFormat("").format(dateFormat);
-                }
-
-                return new JsonPrimitive(dateJson);
+                return new JsonPrimitive(date.getTime());
             }
         })
         .registerTypeAdapter(Date.class, new JsonDeserializer<Date>() {
             public Date deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-                try {
-                    String dateJson = json.getAsString();
-
-                    if (!dateFormatDeserializer.isEmpty()) {
-                        return new SimpleDateFormat(dateFormatDeserializer).parse(dateJson);
-                    } else if (!dateFormat.isEmpty()) {
-                        return new SimpleDateFormat(dateFormat).parse(dateJson);
-                    } else {
-                        return new Date(json.getAsJsonPrimitive().getAsLong());
-                    }
-                } catch (ParseException e) {
-                    return null;
-                }
+                return new Date(json.getAsJsonPrimitive().getAsLong());
             }
         })
-        .addSerializationExclusionStrategy(new SerializationExclusionStrategy())
-        .addDeserializationExclusionStrategy(new DeserializationExclusionStrategy());
+        .setExclusionStrategies(new AnnotationExclusionStrategy());
 
         return builder.create();
     }
 
-    private static class SerializationExclusionStrategy implements ExclusionStrategy {
+    private static class AnnotationExclusionStrategy implements ExclusionStrategy {
 
         @Override
-        public boolean shouldSkipField(FieldAttributes field) {
-            ExcludeJson excludeJson = field.getAnnotation(ExcludeJson.class);
-            return excludeJson != null && !excludeJson.serialize();
-        }
-
-        @Override
-        public boolean shouldSkipClass(Class<?> clazz) {
-            return false;
-        }
-    }
-
-    private static class DeserializationExclusionStrategy implements ExclusionStrategy {
-
-        @Override
-        public boolean shouldSkipField(FieldAttributes field) {
-            ExcludeJson excludeJson = field.getAnnotation(ExcludeJson.class);
-            return excludeJson != null && !excludeJson.deserialize();
+        public boolean shouldSkipField(FieldAttributes f) {
+            return f.getAnnotation(ExcludeJson.class) != null;
         }
 
         @Override

@@ -43,19 +43,23 @@ public class RequestExecute implements OnPlainRequest {
         print("Request: " + settings.url);
 
         // Executa o onPreExecute
-        settings.requestCallback.onPreExecute();
+        settings.onRequestCallback.onPreExecute();
         // Recupera a superClass para obter o tipo de retorno
-        superClass = ((ParameterizedType) settings.requestCallback.getClass().getGenericSuperclass()).getActualTypeArguments()[0];
+        if (settings.onRequestCallback.getClass().getGenericInterfaces().length > 0)
+            superClass = ((ParameterizedType) settings.onRequestCallback.getClass().getGenericInterfaces()[0]).getActualTypeArguments()[0];
+        else
+            superClass = ((ParameterizedType) settings.onRequestCallback.getClass().getGenericSuperclass()).getActualTypeArguments()[0];
 
-        if (settings.enableSSL)
-            SSLUtil.updateSecurityProvider(PlainRequestQueue.getInstance().getContext(), settings);
 
         PlainRequestQueue plainRequestQueue = PlainRequestQueue.getInstance();
+
+        if (settings.enableSSL)
+            SSLUtil.updateSecurityProvider(plainRequestQueue.getContext(), settings.tlsVersion);
 
         // Criação da request
         RequestCustom request = new RequestCustom(settings, superClass, this, plainRequestQueue.getRequestIntercept());
 
-        if (!settings.tagName.isEmpty())
+        if (settings.tagName != null && !settings.tagName.isEmpty())
             request.setTag(settings.tagName); // Define tag para a request
 
         // Execução da request
@@ -74,7 +78,7 @@ public class RequestExecute implements OnPlainRequest {
         print("StatusCode: " + statusCode);
         print("Response:" + response.toString());
 
-        settings.requestCallback.onSuccess(new ResponseConvert().convert(response, settings, superClass), statusCode);
+        settings.onRequestCallback.onSuccess(new ResponseConvert().convert(response, settings, superClass), statusCode);
     }
 
     /**
@@ -92,7 +96,7 @@ public class RequestExecute implements OnPlainRequest {
         if (!settings.buildRelease)
             Log.e(TAG, "Error: " + msgError);
 
-        settings.requestCallback.onError(error, msgError, statusCode);
+        settings.onRequestCallback.onError(error, msgError, statusCode);
     }
 
     private void timeRequest() {

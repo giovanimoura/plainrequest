@@ -9,7 +9,6 @@ import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.security.ProviderInstaller;
-import com.plainrequest.model.Settings;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -28,9 +27,9 @@ import javax.net.ssl.SSLSocketFactory;
  */
 public class SSLUtil {
 
-    public static void updateSecurityProvider(Context context, Settings settings) {
+    public static void updateSecurityProvider(Context context, String tlsVersion) {
         try {
-            SSLContext.getInstance(settings.protocolGooglePlayServices);
+            SSLContext.getInstance(tlsVersion);
             ProviderInstaller.installIfNeeded(context);
 
         } catch (GooglePlayServicesRepairableException e) {
@@ -44,8 +43,8 @@ public class SSLUtil {
             }
         } catch (GooglePlayServicesNotAvailableException e) {
             try {
-                // Se no android não existir o serviço Google Play Service, altera o protocolo do SSLSocketFactory, default TSL
-                HttpsURLConnection.setDefaultSSLSocketFactory(new SSLSocketCustomFactory(settings.protocolSSLSocket));
+                // Se no android não existir o serviço Google Play Service, altera o protocolo do SSLSocketFactory
+                HttpsURLConnection.setDefaultSSLSocketFactory(new SSLSocketCustomFactory("TLS", tlsVersion));
 
             } catch (Exception e1) {
                 Log.e("SecurityException", "Google Play Services not available.");
@@ -58,8 +57,10 @@ public class SSLUtil {
     static class SSLSocketCustomFactory extends SSLSocketFactory {
 
         private SSLSocketFactory internalSSLSocketFactory;
+        private String tlsVersion;
 
-        public SSLSocketCustomFactory(String protocol) throws KeyManagementException, NoSuchAlgorithmException {
+        public SSLSocketCustomFactory(String protocol, String tlsVersion) throws KeyManagementException, NoSuchAlgorithmException {
+            this.tlsVersion = tlsVersion;
             SSLContext context = SSLContext.getInstance(protocol);
             context.init(null, null, null);
             internalSSLSocketFactory = context.getSocketFactory();
@@ -102,7 +103,7 @@ public class SSLUtil {
 
         private Socket enableTLSOnSocket(Socket socket) {
             if(socket != null && (socket instanceof SSLSocket)) {
-                ((SSLSocket)socket).setEnabledProtocols(new String[] {"TLSv1.1", "TLSv1.2"});
+                ((SSLSocket)socket).setEnabledProtocols(new String[] {"TLSv1.1", "TLSv1.2", tlsVersion});
             }
             return socket;
         }

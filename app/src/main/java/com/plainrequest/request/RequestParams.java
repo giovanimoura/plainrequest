@@ -1,5 +1,7 @@
 package com.plainrequest.request;
 
+import android.util.Log;
+
 import com.plainrequest.util.JsonUtil;
 
 import org.json.JSONArray;
@@ -21,6 +23,7 @@ import java.util.Map;
  */
 class RequestParams {
 
+    private final String TAG = "PLAINREQUEST";
     private Object paramsObj;
 
     public RequestParams(Object paramsObj) {
@@ -49,6 +52,7 @@ class RequestParams {
                 sep = "&";
             }
 
+            Log.i(TAG, "Params: " + encodedParams.toString());
             return encodedParams.toString();
         } catch (UnsupportedEncodingException var6) {
             throw new RuntimeException("Encoding not supported: " + paramsEncoding, var6);
@@ -62,19 +66,19 @@ class RequestParams {
      * @throws Exception
      */
     public String getParamsBody() throws Exception {
-        String paramsStr = null;
+        String params = null;
 
         if (paramsObj != null) {
             if (paramsObj instanceof String || paramsObj instanceof JSONObject || paramsObj instanceof JSONArray) {
-                paramsStr = paramsObj.toString();
+                params = paramsObj.toString();
             } else if (paramsObj instanceof List || paramsObj instanceof ArrayList || paramsObj instanceof LinkedList || paramsObj instanceof Collection) {
-                paramsStr = JsonUtil.listToJson((List) paramsObj);
+                params = JsonUtil.listToJson((List) paramsObj);
             } else {
-                paramsStr = JsonUtil.objToJson(paramsObj);
+                params = JsonUtil.objToJson(paramsObj);
             }
         }
-
-        return paramsStr;
+        Log.i(TAG, "Params: " + params);
+        return params;
     }
 
     public Object getParamsObj() {
