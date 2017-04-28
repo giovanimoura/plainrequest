@@ -1,2 +1,2 @@
 # plainrequest
-PlainRequest - Android Request
+PlainRequest - Android Request (Version BETA)
