@@ -18,6 +18,20 @@ PlainRequest.builder()
     })
 ```
 
+```java
+PlainRequest.builder()
+    .get(URL)
+    .result(new ResultRequest<Customer>() {
+        @Override
+        public void onSuccess(Customer customer, int statusCode) {
+        }
+
+        @Override
+        public void onError(VolleyError error, String msgError, int statusCode) {
+        }
+    })
+```
+
 ### Pré Requisitos
 
 * Android 4.0 ou superior

@@ -8,7 +8,6 @@
 /build
 /captures
 /gradlew.bat
-/gradle.properties
 /app/maven-push.gradle
 
 # [Android] ========================
