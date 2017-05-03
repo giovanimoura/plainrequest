@@ -55,7 +55,7 @@ class BuilderBase<T extends BuilderBase> {
      *
      * @param enableSSL
      */
-    public T SSLSecurity(boolean enableSSL) {
+    public T sslSecurity(boolean enableSSL) {
         settings.enableSSL = enableSSL;
         return (T) this;
     }

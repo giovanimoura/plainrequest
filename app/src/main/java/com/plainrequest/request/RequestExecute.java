@@ -43,12 +43,12 @@ public class RequestExecute implements OnPlainRequest {
         print("Request: " + settings.url);
 
         // Executa o onPreExecute
-        settings.onRequestCallback.onPreExecute();
+        settings.onResultRequest.onPreExecute();
         // Recupera a superClass para obter o tipo de retorno
-        if (settings.onRequestCallback.getClass().getGenericInterfaces().length > 0)
-            superClass = ((ParameterizedType) settings.onRequestCallback.getClass().getGenericInterfaces()[0]).getActualTypeArguments()[0];
+        if (settings.onResultRequest.getClass().getGenericInterfaces().length > 0)
+            superClass = ((ParameterizedType) settings.onResultRequest.getClass().getGenericInterfaces()[0]).getActualTypeArguments()[0];
         else
-            superClass = ((ParameterizedType) settings.onRequestCallback.getClass().getGenericSuperclass()).getActualTypeArguments()[0];
+            superClass = ((ParameterizedType) settings.onResultRequest.getClass().getGenericSuperclass()).getActualTypeArguments()[0];
 
 
         PlainRequestQueue plainRequestQueue = PlainRequestQueue.getInstance();
@@ -78,7 +78,7 @@ public class RequestExecute implements OnPlainRequest {
         print("StatusCode: " + statusCode);
         print("Response:" + response.toString());
 
-        settings.onRequestCallback.onSuccess(new ResponseConvert().convert(response, settings, superClass), statusCode);
+        settings.onResultRequest.onSuccess(new ResponseConvert().convert(response, settings, superClass), statusCode);
     }
 
     /**
@@ -96,7 +96,7 @@ public class RequestExecute implements OnPlainRequest {
         if (!settings.buildRelease)
             Log.e(TAG, "Error: " + msgError);
 
-        settings.onRequestCallback.onError(error, msgError, statusCode);
+        settings.onResultRequest.onError(error, msgError, statusCode);
     }
 
     private void timeRequest() {

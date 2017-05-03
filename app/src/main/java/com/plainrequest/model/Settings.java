@@ -1,6 +1,6 @@
 package com.plainrequest.model;
 
-import com.plainrequest.interfaces.OnRequestCallback;
+import com.plainrequest.interfaces.OnResultRequest;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -20,7 +20,7 @@ public class Settings implements Cloneable {
     public String url;
     public int method;
     public Object params;
-    public OnRequestCallback onRequestCallback;
+    public OnResultRequest onResultRequest;
     public boolean clearUrlDefault;
     public String nameFindJson;
 

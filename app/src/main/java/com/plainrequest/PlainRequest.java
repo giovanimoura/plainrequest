@@ -18,7 +18,7 @@ public class PlainRequest {
     }
 
     /**
-     * Cancela a request conforme tagName
+     * Cancela a request de acordo com a tagName
      *
      * @param tagName
      */

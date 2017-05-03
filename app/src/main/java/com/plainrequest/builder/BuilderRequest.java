@@ -1,8 +1,8 @@
 package com.plainrequest.builder;
 
 import com.plainrequest.PlainRequestQueue;
-import com.plainrequest.RequestCallback;
-import com.plainrequest.interfaces.OnRequestCallback;
+import com.plainrequest.ResultRequest;
+import com.plainrequest.interfaces.OnResultRequest;
 import com.plainrequest.request.RequestExecute;
 
 import java.util.HashMap;
@@ -33,33 +33,33 @@ public class BuilderRequest extends BuilderBase<BuilderRequest> {
     }
 
     /**
-     * Callback da request, com retorno generico no response do onSuccess
+     * Resultado da request, com retorno generico no response do onSuccess
      *
      * onPreExecute - Executado antes da request
      * onSuccess    - Executado após sucesso no retorno da request
      * onError      - Executado em casos de exception da request
      *
-     * @param requestCallback
+     * @param resultRequest
      * @param <T>
      */
-    public <T> BuilderRequest requestCallback(RequestCallback<T> requestCallback) {
-        settings.onRequestCallback = requestCallback;
+    public <T> BuilderRequest result(ResultRequest<T> resultRequest) {
+        settings.onResultRequest = resultRequest;
         return this;
     }
 
     /**
-     * Callback da request, com retorno generico no response do onSuccess
+     * Resultado da request, com retorno generico no response do onSuccess
      *
      * onPreExecute - Executado antes da request
      * onSuccess    - Executado após sucesso no retorno da request
      * onError      - Executado em casos de exception da request
      *
-     * @param onRequestCallback
+     * @param onResultRequest
      * @param <T>
      * @return
      */
-    public <T> BuilderRequest requestCallback(OnRequestCallback<T> onRequestCallback) {
-        settings.onRequestCallback = onRequestCallback;
+    public <T> BuilderRequest result(OnResultRequest<T> onResultRequest) {
+        settings.onResultRequest = onResultRequest;
         return this;
     }
 

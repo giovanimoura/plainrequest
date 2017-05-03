@@ -180,16 +180,32 @@ public class JsonUtil {
                 return new Date(json.getAsJsonPrimitive().getAsLong());
             }
         })
-        .setExclusionStrategies(new AnnotationExclusionStrategy());
+        .addSerializationExclusionStrategy(new SerializationExclusionStrategy())
+        .addDeserializationExclusionStrategy(new DeserializationExclusionStrategy());
 
         return builder.create();
     }
 
-    private static class AnnotationExclusionStrategy implements ExclusionStrategy {
+    private static class SerializationExclusionStrategy implements ExclusionStrategy {
 
         @Override
-        public boolean shouldSkipField(FieldAttributes f) {
-            return f.getAnnotation(ExcludeJson.class) != null;
+        public boolean shouldSkipField(FieldAttributes field) {
+            ExcludeJson excludeJson = field.getAnnotation(ExcludeJson.class);
+            return excludeJson != null && !excludeJson.serialize();
+        }
+
+        @Override
+        public boolean shouldSkipClass(Class<?> clazz) {
+            return false;
+        }
+    }
+
+    private static class DeserializationExclusionStrategy implements ExclusionStrategy {
+
+        @Override
+        public boolean shouldSkipField(FieldAttributes field) {
+            ExcludeJson excludeJson = field.getAnnotation(ExcludeJson.class);
+            return excludeJson != null && !excludeJson.deserialize();
         }
 
         @Override

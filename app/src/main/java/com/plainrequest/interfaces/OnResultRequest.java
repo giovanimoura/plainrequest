@@ -7,7 +7,7 @@ import com.android.volley.VolleyError;
  *
  * @author Giovani Moura
  */
-public interface OnRequestCallback<T> {
+public interface OnResultRequest<T> {
 
     /**
      * Executado antes da request

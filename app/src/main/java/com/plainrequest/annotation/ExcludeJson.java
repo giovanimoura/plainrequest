@@ -12,4 +12,6 @@ import java.lang.annotation.Target;
 @Target(ElementType.FIELD)
 public @interface ExcludeJson {
 
+    boolean serialize() default false;
+    boolean deserialize() default false;
 }
