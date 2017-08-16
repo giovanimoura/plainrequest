@@ -9,6 +9,7 @@
 /captures
 /gradlew.bat
 /app/maven-push.gradle
+/gradle.properties
 
 # [Android] ========================
 # Built application files

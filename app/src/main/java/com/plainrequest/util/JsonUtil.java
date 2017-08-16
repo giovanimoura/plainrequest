@@ -21,6 +21,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
+import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.util.Date;
 import java.util.List;
@@ -180,6 +181,7 @@ public class JsonUtil {
                 return new Date(json.getAsJsonPrimitive().getAsLong());
             }
         })
+        .excludeFieldsWithModifiers(Modifier.FINAL, Modifier.TRANSIENT, Modifier.STATIC)
         .addSerializationExclusionStrategy(new SerializationExclusionStrategy())
         .addDeserializationExclusionStrategy(new DeserializationExclusionStrategy());
 
