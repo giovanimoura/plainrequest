@@ -1,5 +1,6 @@
 package com.plainrequest.model;
 
+import com.plainrequest.enums.ContentTypeEnum;
 import com.plainrequest.interfaces.OnResultRequest;
 
 import java.util.HashMap;
@@ -27,12 +28,14 @@ public class Settings implements Cloneable {
     // Settings BuilderQueue
     public String urlDefault;
     public boolean buildRelease;
+    public ContentTypeEnum contentTypeEnum;
     public String tlsVersion;
 
     public Settings() {
         this.mapHeaders = new HashMap<>();
         this.timeOutSeconds = 10; // 10 seconds of timeout
         this.enableSSL = true;
+        this.contentTypeEnum = ContentTypeEnum.APPLICATION_JSON;
         this.tlsVersion = "TLSv1.2";
     }
 

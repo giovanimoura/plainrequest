@@ -2,6 +2,7 @@ package com.plainrequest.request;
 
 import android.util.Log;
 
+import com.plainrequest.enums.ContentTypeEnum;
 import com.plainrequest.util.JsonUtil;
 
 import org.json.JSONArray;
@@ -25,18 +26,21 @@ class RequestParams {
 
     private final String TAG = "PLAINREQUEST";
     private Object paramsObj;
+    private ContentTypeEnum contentTypeEnum;
+    private String paramsEncoding; // Tipo de enconding
 
-    public RequestParams(Object paramsObj) {
+    public RequestParams(Object paramsObj, ContentTypeEnum contentTypeEnum, String paramsEncoding) {
         this.paramsObj = paramsObj;
+        this.contentTypeEnum = contentTypeEnum;
+        this.paramsEncoding = paramsEncoding;
     }
 
     /**
      * Retorna os parametros do QueryParam
      *
-     * @param paramsEncoding Tipo de enconding
      * @return
      */
-    public String getParamsQuery(String paramsEncoding) {
+    public String getParamsQuery() {
         StringBuilder encodedParams = new StringBuilder();
 
         try {
@@ -69,12 +73,17 @@ class RequestParams {
         String params = null;
 
         if (paramsObj != null) {
-            if (paramsObj instanceof String || paramsObj instanceof JSONObject || paramsObj instanceof JSONArray) {
-                params = paramsObj.toString();
-            } else if (paramsObj instanceof List || paramsObj instanceof ArrayList || paramsObj instanceof LinkedList || paramsObj instanceof Collection) {
-                params = JsonUtil.listToJson((List) paramsObj);
-            } else {
-                params = JsonUtil.objToJson(paramsObj);
+            if (contentTypeEnum == ContentTypeEnum.APPLICATION_JSON) {
+                if (paramsObj instanceof String || paramsObj instanceof JSONObject || paramsObj instanceof JSONArray) {
+                    params = paramsObj.toString();
+                } else if (paramsObj instanceof List || paramsObj instanceof ArrayList || paramsObj instanceof LinkedList || paramsObj instanceof Collection) {
+                    params = JsonUtil.listToJson((List) paramsObj);
+                } else {
+                    params = JsonUtil.objToJson(paramsObj);
+                }
+
+            } else if (contentTypeEnum == ContentTypeEnum.APPLICATION_FROM_URLENCODED) {
+                params = getParamsQuery();
             }
         }
         Log.i(TAG, "Params: " + params);

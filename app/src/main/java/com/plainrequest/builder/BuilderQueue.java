@@ -3,6 +3,7 @@ package com.plainrequest.builder;
 import android.app.Application;
 
 import com.plainrequest.PlainRequestQueue;
+import com.plainrequest.enums.ContentTypeEnum;
 
 /**
  * @autor Giovani Moura
@@ -43,11 +44,21 @@ public class BuilderQueue extends BuilderBase<BuilderQueue> {
      * Se for true, não serão registrados os log's
      * Ex.: .release(!BuildConfig.DEBUG)
      *
-     *
      * @param buildRelease
      */
     public BuilderQueue release(boolean buildRelease) {
         this.settings.buildRelease = buildRelease;
+        return this;
+    }
+
+    /**
+     *
+     *
+     * @param contentTypeEnum
+     * @return
+     */
+    public BuilderQueue contentType(ContentTypeEnum contentTypeEnum) {
+        this.settings.contentTypeEnum = contentTypeEnum;
         return this;
     }
 }

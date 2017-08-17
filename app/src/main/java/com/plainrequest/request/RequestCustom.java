@@ -11,6 +11,7 @@ import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.HttpHeaderParser;
+import com.plainrequest.enums.ContentTypeEnum;
 import com.plainrequest.interfaces.OnInterceptRequest;
 import com.plainrequest.interfaces.OnPlainRequest;
 import com.plainrequest.model.Settings;
@@ -44,7 +45,7 @@ class RequestCustom<T> extends Request<T> {
     public RequestCustom(Settings settings, Type superClass, OnPlainRequest onPlainRequest, OnInterceptRequest onInterceptRequest) {
         super(settings.method, settings.url, null);
         this.settings = settings;
-        this.requestParams = new RequestParams(settings.params);
+        this.requestParams = new RequestParams(settings.params, settings.contentTypeEnum, PROTOCOL_CHARSET);
         this.superClass = superClass;
         this.onPlainRequest = onPlainRequest;
         this.onInterceptRequest = onInterceptRequest;
@@ -114,7 +115,7 @@ class RequestCustom<T> extends Request<T> {
      */
     private String getUrlGet() {
         try {
-            return super.getUrl() + "?" + requestParams.getParamsQuery(PROTOCOL_CHARSET); // concatena a url com os parametros
+            return super.getUrl() + "?" + requestParams.getParamsQuery(); // concatena a url com os parametros
         } catch (Exception e) {
             VolleyLog.wtf("Unsupported Encoding while trying to get the bytes of %s using %s", new Object[]{requestParams.getParamsObj(), PROTOCOL_CHARSET});
             return null;
@@ -186,6 +187,6 @@ class RequestCustom<T> extends Request<T> {
     }
 
     private String getContentType() {
-        return String.format("application/json; charset=%s", new Object[]{PROTOCOL_CHARSET});
+        return String.format(this.settings.contentTypeEnum.getValue() + "; charset=%s", new Object[]{PROTOCOL_CHARSET});
     }
 }
