@@ -1,6 +1,7 @@
 package com.plainrequest.request;
 
 import com.android.volley.AuthFailureError;
+import com.android.volley.Cache;
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.NetworkError;
 import com.android.volley.NetworkResponse;
@@ -11,7 +12,6 @@ import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.HttpHeaderParser;
-import com.plainrequest.enums.ContentTypeEnum;
 import com.plainrequest.interfaces.OnInterceptRequest;
 import com.plainrequest.interfaces.OnPlainRequest;
 import com.plainrequest.model.Settings;
@@ -49,6 +49,7 @@ class RequestCustom<T> extends Request<T> {
         this.superClass = superClass;
         this.onPlainRequest = onPlainRequest;
         this.onInterceptRequest = onInterceptRequest;
+        this.setShouldCache(settings.cacheEnable);
 
         // Define o timeout da request
         setRetryPolicy(new DefaultRetryPolicy((settings.timeOutSeconds * 1000), 0, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
@@ -140,6 +141,27 @@ class RequestCustom<T> extends Request<T> {
     @Override
     protected Response<T> parseNetworkResponse(NetworkResponse response) {
         try {
+            if (settings.cacheEnable) {
+                Cache.Entry cacheEntry = HttpHeaderParser.parseCacheHeaders(response);
+                if (cacheEntry == null) {
+                    cacheEntry = new Cache.Entry();
+                }
+                cacheEntry.data = response.data;
+
+                String headerValue;
+                headerValue = response.headers.get("Date");
+                if (headerValue != null) {
+                    cacheEntry.serverDate = HttpHeaderParser.parseDateAsEpoch(headerValue);
+                }
+
+                headerValue = response.headers.get("Last-Modified");
+                if (headerValue != null) {
+                    cacheEntry.lastModified = HttpHeaderParser.parseDateAsEpoch(headerValue);
+                }
+
+                cacheEntry.responseHeaders = response.headers;
+            }
+
             this.statusCode = response.statusCode;
             return getResponse(response);
         } catch (UnsupportedEncodingException var3) {

@@ -62,7 +62,6 @@ public class RequestExecute implements OnPlainRequest {
         if (settings.tagName != null && !settings.tagName.isEmpty())
             request.setTag(settings.tagName); // Define tag para a request
 
-        // Execução da request
         plainRequestQueue.getRequestQueue().add(request);
     }
 

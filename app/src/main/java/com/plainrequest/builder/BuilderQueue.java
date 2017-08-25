@@ -54,6 +54,17 @@ public class BuilderQueue extends BuilderBase<BuilderQueue> {
     /**
      *
      *
+     * @param enable
+     * @return
+     */
+    public BuilderQueue cacheEnable(boolean enable) {
+        this.settings.cacheEnable = enable;
+        return this;
+    }
+
+    /**
+     *
+     *
      * @param contentTypeEnum
      * @return
      */

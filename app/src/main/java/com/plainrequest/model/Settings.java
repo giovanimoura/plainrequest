@@ -28,6 +28,7 @@ public class Settings implements Cloneable {
     // Settings BuilderQueue
     public String urlDefault;
     public boolean buildRelease;
+    public boolean cacheEnable;
     public ContentTypeEnum contentTypeEnum;
     public String tlsVersion;
 
