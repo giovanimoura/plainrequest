@@ -39,7 +39,7 @@ PlainRequest.builder()
 ### Download
 
 ```
-compile 'com.github.giovanimoura:plainrequest:0.0.3'
+compile 'com.github.giovanimoura:plainrequest:1.0.0'
 ```
 
 ### Recomendações
