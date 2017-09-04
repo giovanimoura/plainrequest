@@ -29,6 +29,7 @@ public class Settings implements Cloneable {
     public String urlDefault;
     public boolean buildRelease;
     public boolean cacheEnable;
+    public int sizeCache;
     public ContentTypeEnum contentTypeEnum;
     public String tlsVersion;
 
@@ -37,6 +38,7 @@ public class Settings implements Cloneable {
         this.timeOutSeconds = 10; // 10 seconds of timeout
         this.enableSSL = true;
         this.contentTypeEnum = ContentTypeEnum.APPLICATION_JSON;
+        this.sizeCache = 2; // 2MB off cache
         this.tlsVersion = "TLSv1.2";
     }
 

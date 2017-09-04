@@ -62,6 +62,9 @@ public class RequestExecute implements OnPlainRequest {
         if (settings.tagName != null && !settings.tagName.isEmpty())
             request.setTag(settings.tagName); // Define tag para a request
 
+        if (settings.cacheEnable)
+            plainRequestQueue.getRequestQueue().start(); // para cache
+
         plainRequestQueue.getRequestQueue().add(request);
     }
 
@@ -76,6 +79,9 @@ public class RequestExecute implements OnPlainRequest {
         timeRequest();
         print("StatusCode: " + statusCode);
         print("Response:" + response.toString());
+
+        if (settings.cacheEnable)
+            PlainRequestQueue.getInstance().getRequestQueue().stop(); // para cache
 
         settings.onResultRequest.onSuccess(new ResponseConvert().convert(response, settings, superClass), statusCode);
     }
@@ -94,6 +100,9 @@ public class RequestExecute implements OnPlainRequest {
 
         if (!settings.buildRelease)
             Log.e(TAG, "Error: " + msgError);
+
+        if (settings.cacheEnable)
+            PlainRequestQueue.getInstance().getRequestQueue().stop(); // para cache
 
         settings.onResultRequest.onError(error, msgError, statusCode);
     }

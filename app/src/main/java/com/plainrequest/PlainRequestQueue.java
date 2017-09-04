@@ -3,7 +3,12 @@ package com.plainrequest;
 import android.app.Application;
 import android.content.Context;
 
+import com.android.volley.Cache;
+import com.android.volley.Network;
 import com.android.volley.RequestQueue;
+import com.android.volley.toolbox.BasicNetwork;
+import com.android.volley.toolbox.DiskBasedCache;
+import com.android.volley.toolbox.HurlStack;
 import com.android.volley.toolbox.Volley;
 import com.plainrequest.builder.BuilderQueue;
 import com.plainrequest.interfaces.OnInterceptRequest;
@@ -46,6 +51,23 @@ public class PlainRequestQueue {
         if(context == null) {
             context = app.getApplicationContext();
             queue = Volley.newRequestQueue(context); // Criação do RequestQueue
+        }
+    }
+
+    /**
+     * Inicia uma instancia da lib PlainRequest
+     * utilizando cache do volley
+     *
+     * @param app
+     * @param sizeCache // tamanho do cache em MB
+     */
+    public void start(Application app, int sizeCache) {
+        if(context == null) {
+            context = app.getApplicationContext();
+            // Cache
+            Cache cache = new DiskBasedCache(app.getCacheDir(), (1024 * 1024) * sizeCache);
+            Network network = new BasicNetwork(new HurlStack());
+            queue = new RequestQueue(cache, network); // Criação do RequestQueue
         }
     }
 

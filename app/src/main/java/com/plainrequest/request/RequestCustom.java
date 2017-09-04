@@ -1,7 +1,6 @@
 package com.plainrequest.request;
 
 import com.android.volley.AuthFailureError;
-import com.android.volley.Cache;
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.NetworkError;
 import com.android.volley.NetworkResponse;
@@ -16,14 +15,18 @@ import com.plainrequest.interfaces.OnInterceptRequest;
 import com.plainrequest.interfaces.OnPlainRequest;
 import com.plainrequest.model.Settings;
 
+import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.zip.GZIPInputStream;
 
 /**
  * Classe da Request customizada
@@ -141,33 +144,12 @@ class RequestCustom<T> extends Request<T> {
     @Override
     protected Response<T> parseNetworkResponse(NetworkResponse response) {
         try {
-            if (settings.cacheEnable) {
-                Cache.Entry cacheEntry = HttpHeaderParser.parseCacheHeaders(response);
-                if (cacheEntry == null) {
-                    cacheEntry = new Cache.Entry();
-                }
-                cacheEntry.data = response.data;
-
-                String headerValue;
-                headerValue = response.headers.get("Date");
-                if (headerValue != null) {
-                    cacheEntry.serverDate = HttpHeaderParser.parseDateAsEpoch(headerValue);
-                }
-
-                headerValue = response.headers.get("Last-Modified");
-                if (headerValue != null) {
-                    cacheEntry.lastModified = HttpHeaderParser.parseDateAsEpoch(headerValue);
-                }
-
-                cacheEntry.responseHeaders = response.headers;
-            }
-
             this.statusCode = response.statusCode;
             return getResponse(response);
-        } catch (UnsupportedEncodingException var3) {
-            return Response.error(new ParseError(var3));
-        } catch (JSONException var4) {
-            return Response.error(new ParseError(var4));
+        } catch (UnsupportedEncodingException e1) {
+            return Response.error(new ParseError(e1));
+        } catch (JSONException e2) {
+            return Response.error(new ParseError(e2));
         }
     }
 
@@ -182,30 +164,55 @@ class RequestCustom<T> extends Request<T> {
     private Response getResponse(NetworkResponse response) throws UnsupportedEncodingException, JSONException {
         T result;
 
+        byte[] data = response.data;
+
+        if (isResponseCompressed(response)) {
+            data = gzipToByte(data);
+        }
+
         if (superClass.equals(JSONObject.class)) {
-            result = (T) new JSONObject(getStrResult(response));
+            result = (T) new JSONObject(convertData(data));
         } else if (superClass.equals(JSONArray.class)) {
-            result = (T) new JSONArray(getStrResult(response));
+            result = (T) new JSONArray(convertData(data));
         } else {
-            result = (T) resultForString(response);
+            result = (T) convertData(data);
         }
 
         return Response.success(result, HttpHeaderParser.parseCacheHeaders(response));
     }
 
-    private String resultForString(NetworkResponse response) {
+    private String convertData(byte[] data) {
         String strResult;
         try {
-            strResult = new String(response.data, PROTOCOL_CHARSET);
+            strResult = new String(data, PROTOCOL_CHARSET);
         } catch (UnsupportedEncodingException var4) {
-            strResult = new String(response.data);
+            strResult = new String(data);
         }
 
         return strResult;
     }
 
-    private String getStrResult(NetworkResponse response) throws UnsupportedEncodingException {
-        return new String(response.data, PROTOCOL_CHARSET);
+//    private String getStrResult(byte[] data) throws UnsupportedEncodingException {
+//        return new String(data, PROTOCOL_CHARSET);
+//    }
+
+    private boolean isResponseCompressed(NetworkResponse response) {
+        return response.headers.containsKey("Content-Encoding") && response.headers.get("Content-Encoding").equalsIgnoreCase("gzip");
+    }
+
+    private byte[] gzipToByte(byte[] data) throws UnsupportedEncodingException {
+        byte[] bytes;
+        try {
+
+            GZIPInputStream gStream = new GZIPInputStream(new ByteArrayInputStream(data));
+            bytes = IOUtils.toByteArray(gStream);
+
+        } catch (IOException e) {
+            VolleyLog.wtf("Unsupported Encoding GZIP");
+            throw new UnsupportedEncodingException(e.getMessage());
+        }
+
+        return bytes;
     }
 
     private String getContentType() {
