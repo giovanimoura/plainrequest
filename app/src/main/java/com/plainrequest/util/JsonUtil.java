@@ -21,6 +21,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.util.Date;
@@ -123,7 +127,7 @@ public class JsonUtil {
      *
      * @param json
      * @param typeToken
-     * @return
+     * @return List
      */
     public static List toList(String json, TypeToken typeToken) {
         return toList("", json, typeToken.getType());
@@ -153,6 +157,30 @@ public class JsonUtil {
             print(e.getMessage());
         }
         return createGson().fromJson(result, superClass);
+    }
+
+    /**
+     * Converte string json para um array
+     *
+     * @param json       String json
+     * @param superClass Tipo da classe do objeto de retorno
+     * @param <T>
+     * @return
+     */
+    public static <T> T[] toArray(String json, Type superClass) {
+        T[] result = null;
+        BufferedReader reader;
+        try {
+            InputStream is = new ByteArrayInputStream(json.getBytes());
+            reader = new BufferedReader(new InputStreamReader(is));
+
+            result = createGson().fromJson(reader, superClass);
+            reader.close();
+
+        } catch (Exception e) {
+            print(e.getMessage());
+        }
+        return result;
     }
 
     /**

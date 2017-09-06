@@ -6,6 +6,7 @@ import com.plainrequest.util.JsonUtil;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -26,6 +27,8 @@ class ResponseConvert {
             response = (T) JsonUtil.toList(settings.nameFindJson, response.toString(), superClass);
         } else if (isMap()) {
             response = (T) JsonUtil.toMap(response.toString(), superClass);
+        } else if (isArray()) {
+            response = (T) JsonUtil.toArray(response.toString(), superClass);
         } else if (isObject()) {
             if (settings.nameFindJson != null)
                 response = JsonUtil.toObject(settings.nameFindJson, response.toString(), (Class) superClass);
@@ -51,6 +54,10 @@ class ResponseConvert {
         } catch (Exception e) {
             return false;
         }
+    }
+
+    private boolean isArray() {
+        return superClass instanceof GenericArrayType;
     }
 
     private boolean isObject() {
