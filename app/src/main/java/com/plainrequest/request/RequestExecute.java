@@ -2,6 +2,8 @@ package com.plainrequest.request;
 
 import android.util.Log;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
 import com.android.volley.VolleyError;
 import com.plainrequest.PlainRequestQueue;
 import com.plainrequest.interfaces.OnPlainRequest;
@@ -10,6 +12,7 @@ import com.plainrequest.util.SSLUtil;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -19,7 +22,8 @@ import java.util.concurrent.TimeUnit;
  */
 public class RequestExecute implements OnPlainRequest {
 
-    private final String TAG = "PLAINREQUEST";
+    private String tagNameRequest;
+    private String TAG = "PLAINREQUEST";
     private Settings settings;
     private Type superClass;
     private long timeRequest;
@@ -34,7 +38,7 @@ public class RequestExecute implements OnPlainRequest {
      * @param settings
      * @param <T>
      */
-    public <T> void execute(Settings settings) {
+    public <T> void execute(final Settings settings) {
         this.settings = settings;
 
         if (!settings.clearUrlDefault)
@@ -59,13 +63,32 @@ public class RequestExecute implements OnPlainRequest {
         // Criação da request
         RequestCustom request = new RequestCustom(settings, superClass, this, plainRequestQueue.getRequestIntercept());
 
-        if (settings.tagName != null && !settings.tagName.isEmpty())
-            request.setTag(settings.tagName); // Define tag para a request
+        defineTagNameRequest(plainRequestQueue);
+        request.setTag(this.tagNameRequest); // Define tag para a request
 
         if (settings.cacheEnable)
             plainRequestQueue.getRequestQueue().start(); // para cache
 
         plainRequestQueue.getRequestQueue().add(request);
+        plainRequestQueue.getRequestQueue().addRequestFinishedListener(new RequestQueue.RequestFinishedListener<Object>() {
+            @Override
+            public void onRequestFinished(Request<Object> request) {
+                PlainRequestQueue plainRequestQueue = PlainRequestQueue.getInstance();
+
+                if (settings.cacheEnable && plainRequestQueue.getListRequests().size() <= 0)
+                    plainRequestQueue.getRequestQueue().stop(); // para cache
+            }
+        });
+    }
+
+    private void defineTagNameRequest(PlainRequestQueue plainRequestQueue) {
+        List<String> requests = plainRequestQueue.getListRequests();
+        this.tagNameRequest = "REQ_PLAIN_" + (requests.size() + 1);
+        requests.add(this.tagNameRequest);
+
+        if (settings.tagName != null && !settings.tagName.isEmpty()) {
+            this.tagNameRequest = settings.tagName;
+        }
     }
 
     /**
@@ -80,8 +103,7 @@ public class RequestExecute implements OnPlainRequest {
         print("StatusCode: " + statusCode);
         print("Response:" + response.toString());
 
-        if (settings.cacheEnable)
-            PlainRequestQueue.getInstance().getRequestQueue().stop(); // para cache
+        removeListRequest();
 
         settings.onResultRequest.onSuccess(new ResponseConvert().convert(response, settings, superClass), statusCode);
     }
@@ -101,10 +123,13 @@ public class RequestExecute implements OnPlainRequest {
         if (!settings.buildRelease)
             Log.e(TAG, "Error: " + msgError);
 
-        if (settings.cacheEnable)
-            PlainRequestQueue.getInstance().getRequestQueue().stop(); // para cache
+        removeListRequest();
 
         settings.onResultRequest.onError(error, msgError, statusCode);
+    }
+
+    private void removeListRequest() {
+        PlainRequestQueue.getInstance().getListRequests().remove(this.tagNameRequest);
     }
 
     private void timeRequest() {

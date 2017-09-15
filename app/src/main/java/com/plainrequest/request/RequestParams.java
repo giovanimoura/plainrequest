@@ -55,8 +55,7 @@ class RequestParams {
                 encodedParams.append(URLEncoder.encode((String)entry.getValue(), paramsEncoding));
                 sep = "&";
             }
-
-            Log.i(TAG, "Params: " + encodedParams.toString());
+            map = null;
             return encodedParams.toString();
         } catch (UnsupportedEncodingException var6) {
             throw new RuntimeException("Encoding not supported: " + paramsEncoding, var6);
@@ -86,7 +85,6 @@ class RequestParams {
                 params = getParamsQuery();
             }
         }
-        Log.i(TAG, "Params: " + params);
         return params;
     }
 

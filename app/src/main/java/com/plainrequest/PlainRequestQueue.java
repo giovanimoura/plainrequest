@@ -13,6 +13,9 @@ import com.android.volley.toolbox.Volley;
 import com.plainrequest.builder.BuilderQueue;
 import com.plainrequest.interfaces.OnInterceptRequest;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Classe para instanciar a RequestQueue
  *
@@ -26,9 +29,11 @@ public class PlainRequestQueue {
     private Context context;
     private RequestQueue queue;
     private BuilderQueue builderQueue;
+    private List<String> listRequests;
 
     private PlainRequestQueue() {
         this.builderQueue = new BuilderQueue();
+        this.listRequests = new ArrayList<>();
     }
 
     public static BuilderQueue builder() {
@@ -80,6 +85,10 @@ public class PlainRequestQueue {
 
     public Context getContext() {
         return context;
+    }
+
+    public List<String> getListRequests() {
+        return listRequests;
     }
 
     public OnInterceptRequest getRequestIntercept() {
