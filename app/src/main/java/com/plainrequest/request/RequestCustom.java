@@ -123,6 +123,8 @@ class RequestCustom<T> extends Request<T> {
         } catch (Exception e) {
             VolleyLog.wtf("Unsupported Encoding while trying to get the bytes of %s using %s", new Object[]{requestParams.getParamsObj(), PROTOCOL_CHARSET});
             return null;
+        } finally {
+            requestParams = null;
         }
     }
 
@@ -133,6 +135,8 @@ class RequestCustom<T> extends Request<T> {
         } catch (Exception e) {
             VolleyLog.wtf("Unsupported Encoding while trying to get the bytes of %s using %s", new Object[]{requestParams.getParamsObj(), PROTOCOL_CHARSET});
             return null;
+        } finally {
+            requestParams = null;
         }
     }
 

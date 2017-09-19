@@ -12,7 +12,6 @@ import com.plainrequest.util.SSLUtil;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -22,7 +21,6 @@ import java.util.concurrent.TimeUnit;
  */
 public class RequestExecute implements OnPlainRequest {
 
-    private String tagNameRequest;
     private String TAG = "PLAINREQUEST";
     private Settings settings;
     private Type superClass;
@@ -63,32 +61,24 @@ public class RequestExecute implements OnPlainRequest {
         // Criação da request
         RequestCustom request = new RequestCustom(settings, superClass, this, plainRequestQueue.getRequestIntercept());
 
-        defineTagNameRequest(plainRequestQueue);
-        request.setTag(this.tagNameRequest); // Define tag para a request
+        if (settings.tagName != null && !settings.tagName.isEmpty()) {
+            request.setTag(settings.tagName); // Define tag para a request
+        }
 
         if (settings.cacheEnable)
             plainRequestQueue.getRequestQueue().start(); // para cache
 
+        plainRequestQueue.incRequestQueueSize();
         plainRequestQueue.getRequestQueue().add(request);
         plainRequestQueue.getRequestQueue().addRequestFinishedListener(new RequestQueue.RequestFinishedListener<Object>() {
             @Override
             public void onRequestFinished(Request<Object> request) {
                 PlainRequestQueue plainRequestQueue = PlainRequestQueue.getInstance();
 
-                if (settings.cacheEnable && plainRequestQueue.getListRequests().size() <= 0)
+                if (settings.cacheEnable && plainRequestQueue.getRequestQueueSize() <= 0)
                     plainRequestQueue.getRequestQueue().stop(); // para cache
             }
         });
-    }
-
-    private void defineTagNameRequest(PlainRequestQueue plainRequestQueue) {
-        List<String> requests = plainRequestQueue.getListRequests();
-        this.tagNameRequest = "REQ_PLAIN_" + (requests.size() + 1);
-        requests.add(this.tagNameRequest);
-
-        if (settings.tagName != null && !settings.tagName.isEmpty()) {
-            this.tagNameRequest = settings.tagName;
-        }
     }
 
     /**
@@ -103,8 +93,8 @@ public class RequestExecute implements OnPlainRequest {
         print("StatusCode: " + statusCode);
         print("Response:" + response.toString());
 
-        removeListRequest();
-
+        PlainRequestQueue.getInstance().decRequestQueueSize();
+        System.gc();
         settings.onResultRequest.onSuccess(new ResponseConvert().convert(response, settings, superClass), statusCode);
     }
 
@@ -123,13 +113,9 @@ public class RequestExecute implements OnPlainRequest {
         if (!settings.buildRelease)
             Log.e(TAG, "Error: " + msgError);
 
-        removeListRequest();
-
+        PlainRequestQueue.getInstance().decRequestQueueSize();
+        System.gc();
         settings.onResultRequest.onError(error, msgError, statusCode);
-    }
-
-    private void removeListRequest() {
-        PlainRequestQueue.getInstance().getListRequests().remove(this.tagNameRequest);
     }
 
     private void timeRequest() {

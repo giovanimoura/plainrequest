@@ -59,4 +59,15 @@ class BuilderBase<T extends BuilderBase> {
         settings.enableSSL = enableSSL;
         return (T) this;
     }
+
+    /**
+     * Define se a biblioteca vai utilizar tratamento de Cache
+     *
+     * @param enable // default false
+     * @return
+     */
+    public T cacheEnable(boolean enable) {
+        this.settings.cacheEnable = enable;
+        return (T) this;
+    }
 }

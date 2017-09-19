@@ -57,17 +57,6 @@ public class BuilderQueue extends BuilderBase<BuilderQueue> {
 
     /**
      * Define se a biblioteca vai utilizar tratamento de Cache
-     *
-     * @param enable // default false
-     * @return
-     */
-    public BuilderQueue cacheEnable(boolean enable) {
-        this.settings.cacheEnable = enable;
-        return this;
-    }
-
-    /**
-     * Define se a biblioteca vai utilizar tratamento de Cache
      * Define o tamanho do cache em MB
      *
      * @param enable // default false
